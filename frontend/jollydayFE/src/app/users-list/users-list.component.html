@@ -1,0 +1,37 @@
+<app-logout></app-logout>
+<h3 class="text-center" style="margin-top: 20px;">Utilizatori</h3>
+<div class="row container" style="margin-top: 100px;">
+    <div class="col-2"></div>
+    <div class="col-8">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Prenume</th>
+                    <th>Nume</th>
+                    <th>Data nasterii</th>
+                    <th>Grup</th>
+                    <th>Actiuni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor = "let user of users">
+                    <td>{{user.username}}</td>
+                    <td>{{user.firstName}}</td>
+                    <td>{{user.lastName}}</td>
+                    <td>{{user.birthday}}</td>
+                    <td>{{(user.group !== null && user.group !== undefined) ? user.group.name : null}}</td>
+                    <td>
+                        <!-- <button (click) = "modifyGivenUser(user.username)" class="btn btn-outline-primary" style="font-size: small; padding: 5px;">Update Details</button>
+                        <button (click) = "deleteGivenUser(user.username)" class="btn btn-outline-danger" style="margin-left: 5px; font-size: small; padding: 5px;">Delete User</button> -->
+                            <button (click) = "showGivenUser(user.username)" class="btn btn-outline-info" style="margin-left: 5px; font-size: small; padding: 5px;">Vezi profil</button>
+                            <div *ngIf="isAdmin">
+                                <button (click) = "deleteGivenUser(user.username)" class="btn btn-outline-danger" style="margin-left: 5px; font-size: small; padding: 5px;">Delete User</button>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-2"></div>
+</div>
