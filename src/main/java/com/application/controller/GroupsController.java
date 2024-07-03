@@ -41,14 +41,9 @@ public class GroupsController {
     }
 
     @GetMapping("/{name}")
-    public ResponseEntity<GroupDTO> getGroupByName(@PathVariable String name) {
+    public ResponseEntity<Group> getGroupByName(@PathVariable String name) {
         var grp = groupService.getGroupByName(name).orElse(null);
-        GroupDTO dto = null;
-        if (grp != null && grp.getLeader() != null)
-            dto = GroupDTO.builder().name(grp.getName()).description(grp.getDescription()).leaderId(grp.getLeader().getId()).build();
-        else if (grp != null)
-            dto = GroupDTO.builder().name(grp.getName()).description(grp.getDescription()).build();
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(grp);
     }
 
     @PutMapping("/{name}/update")
@@ -110,5 +105,18 @@ public class GroupsController {
     @DeleteMapping("/deleteGroup/{groupId}")
     public void deleteGroup(@PathVariable Integer groupId) throws AccessDeniedException, UserNotFoundException {
         groupService.deleteGroup(groupId);
+    }
+
+    @PutMapping("/adminGroupUpdate/{groupId}")
+    public Group updateGroup(@PathVariable Integer groupId, @RequestBody Group group) throws Exception {
+        groupService.updateNameOfGroup(groupId, group.getName());
+        groupService.updateDescriptionOfGroup(groupId, group.getDescription());
+        return groupService.getGroupById(groupId).orElseThrow(() -> new Exception("Error at updating the group with id: " + groupId.toString()));
+    }
+
+    @PutMapping("/userGroupUpdate/{groupId}")
+    public Group updateGroupByUser(@PathVariable Integer groupId, @RequestBody Group group) throws Exception {
+        groupService.updateDescriptionOfGroup(groupId, group.getDescription());
+        return groupService.getGroupById(groupId).orElseThrow(() -> new Exception("Error at updating the group with id: " + groupId.toString()));
     }
 }

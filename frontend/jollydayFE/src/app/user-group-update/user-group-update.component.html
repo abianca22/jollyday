@@ -1,0 +1,14 @@
+<div class="container">
+    <h2>Modifica grup</h2>
+    <form (ngSubmit)="onSubmit(groupForm)" #groupForm="ngForm">
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control" id="description" maxlength="200" [(ngModel)]="group.description" name="description" #description="ngModel"></textarea>
+        <div *ngIf="description.invalid && (description.dirty || description.touched)" class="alert alert-danger">
+          <div *ngIf="description.errors?.['maxlength']">Descrierea nu poate avea mai mult de 200 de caractere.</div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="groupForm.invalid">Submit</button>
+    </form>
+  </div>
+  

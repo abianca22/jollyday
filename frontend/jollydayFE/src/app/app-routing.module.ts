@@ -11,6 +11,9 @@ import { GroupListComponent } from './group-list/group-list.component';
 import { GroupUsersListComponent } from './group-users-list/group-users-list.component';
 import { EventListComponent } from './event-list/event-list.component';
 import { AddGroupComponent } from './add-group/add-group.component';
+import { AdminGroupUpdateComponent } from './admin-group-update/admin-group-update.component';
+import { UserGroupUpdateComponent } from './user-group-update/user-group-update.component';
+import { UpdateUserDetailsComponent } from './update-user-details/update-user-details.component';
 
 const routes: Routes = [
   {
@@ -37,6 +40,16 @@ const routes: Routes = [
     canActivate: [NavGuard]
   },
   {
+    path: "updateGroup/:name",
+    component: AdminGroupUpdateComponent,
+    canActivate: [NavGuard]
+  },
+  {
+    path: "updateGroupDescription/:name",
+    component: UserGroupUpdateComponent,
+    canActivate: [NavGuard]
+  },
+  {
     path: "user/:username",
     component: ViewUserComponent,
     canActivate: [NavGuard]
@@ -54,6 +67,11 @@ const routes: Routes = [
   {
     path: "events",
     component: EventListComponent,
+    canActivate: [NavGuard]
+  },
+  {
+    path: "modifyDetails",
+    component: UpdateUserDetailsComponent,
     canActivate: [NavGuard]
   },
   {

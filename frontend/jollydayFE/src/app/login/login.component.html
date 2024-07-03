@@ -2,14 +2,22 @@
 <div class="row">
     <div class="col-3"></div>
     <div class="container col-6" style="margin-top: 30px;">
-        <form (ngSubmit) = "logIn()">
+        <form (ngSubmit) = "logIn(userForm)" #userForm="ngForm">
+            <div *ngIf="failedLogin" class="alert alert-danger">Credentiale incorecte</div>
             <div class="form-group" style="margin-bottom: 3px;">
-                <input type="text" class="form-control" name="username" placeholder="Username" [(ngModel)] = "user.username" required="required">
+                <input type="text" class="form-control" name="username" #username="ngModel" placeholder="Username" [(ngModel)] = "user.username" required="required">
+                <div *ngIf="username.invalid && (username.touched || username.dirty)" class="alert alert-danger small">
+                    <div *ngIf="username.errors?.['required']">Camp obligatoriu</div>
+                </div>
             </div>
             <div class="form-group" style="margin-bottom: 3px;">
-            <input type="password" class="form-control" name="password" placeholder="Password" [(ngModel)] = "user.password" required="required">
-            </div>
+            <input type="password" #password="ngModel" class="form-control" name="password" placeholder="Password" [(ngModel)] = "user.password" required="required">
+            <div *ngIf="password.invalid && (password.touched || password.dirty)" class="alert alert-danger small">
+                <div *ngIf="password.errors?.['required']">Camp obligatoriu</div>
+            </div>    
+        </div>
             <button type="submit" class="btn btn-primary">Conecteaza-te</button>
+            <button class="btn btn-primary" routerLink="/signup">Inregistreaza-te</button>
         </form>
     </div>
     <div class="col-3"></div>

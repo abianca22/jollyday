@@ -8,6 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -27,8 +29,16 @@ public class User implements UserDetails {
     @GeneratedValue
     private Integer id;
     @Column(unique = true)
+    @NotBlank(message="Numele de utilizator este obligatoriu")
     private String username;
+    @Column(unique = true)
+    @NotBlank(message="Adresa de email este obligatorie")
+    @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+            + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")
     private String email;
+    @NotBlank(message="Parola este obligatorie")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}$",
+    message="Parola trebuie sa aiba intre 8 si 20 de caractere, cel putin o litera mare, cel putin o litera mica, cel putin o cifra si cel putin un caracter special")
     private String password;
     private String lastName;
     private String firstName;

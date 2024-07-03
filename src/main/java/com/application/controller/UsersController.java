@@ -29,6 +29,7 @@ public class UsersController {
     private final PasswordEncoder pwEnc;
 
     private String userToJson(User usr) {
+        if (usr == null) { return null; }
         DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String bday = usr.getBirthday().format(dt);
         String grp = (usr.getGroup() != null) ? usr.getGroup().getName() : "Nu face parte dintr-un grup!";
@@ -50,6 +51,7 @@ public class UsersController {
         System.out.println(usr);
         return userToJson(usr);
     }
+
 
     @GetMapping("/getUser/{id}")
     public String getUserById(@PathVariable Integer id) throws UserNotFoundException {
@@ -77,6 +79,17 @@ public class UsersController {
         return ResponseEntity.ok(res);
     }
 
+    @DeleteMapping("/deleteUser/{username}")
+    public void deleteUserByUsername(@PathVariable String username) {
+        User usr = usrSrv.findUserByUsername(username).orElse(null);
+
+        if (usr != null) {
+         usrSrv.deleteUser(usr.getId());
+        }
+    }
+
+
+
 
     @PostMapping("/users")
     public User addUser(@RequestBody User usr) {
@@ -87,14 +100,17 @@ public class UsersController {
     @PutMapping("/updateUser/{username}")
     public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User reqUsr) throws UserNotFoundException {
         User usr = usrSrv.findUserByUsername(username).orElseThrow(UserNotFoundException::new);
-        usr.setUsername(reqUsr.getUsername());
-        usr.setFirstName(reqUsr.getFirstName());
-        usr.setLastName((reqUsr.getLastName()));
-        usr.setEmail(reqUsr.getEmail());
-        usr.setPassword(pwEnc.encode(reqUsr.getPassword()));
-        usr.setUserRole(reqUsr.getUserRole());
-        usr.setGroup(reqUsr.getGroup());
-        usr.setBirthday(reqUsr.getBirthday());
+        if (!usr.getFirstName().equals(reqUsr.getFirstName()) && reqUsr.getFirstName() != null)
+            usr.setFirstName(reqUsr.getFirstName());
+        if (!usr.getLastName().equals(reqUsr.getLastName()) && reqUsr.getLastName() != null)
+            usr.setLastName(reqUsr.getLastName());
+        if (!usr.getEmail().equals(reqUsr.getEmail()) && reqUsr.getEmail() != null)
+            usr.setEmail(reqUsr.getEmail());
+        //usr.setPassword(pwEnc.encode(reqUsr.getPassword()));
+        //usr.setUserRole(reqUsr.getUserRole());
+       // usr.setGroup(reqUsr.getGroup());
+        if (!usr.getBirthday().equals(reqUsr.getBirthday()) && reqUsr.getBirthday() != null)
+            usr.setBirthday(reqUsr.getBirthday());
         User modUsr = usrSrv.addNewUser(usr);
         return ResponseEntity.ok(modUsr);
     }
@@ -114,7 +130,9 @@ public class UsersController {
 
     @GetMapping("/getEvents")
     public List<Event> getEvents() {
+        System.out.println("GET EVENTS");
         var usrId = this.usrSrv.getAuthenticatedUserId();
+        System.out.println(this.usrSrv.findAllEvents(usrId));
         return this.usrSrv.findAllEvents(usrId);
     }
 
@@ -147,6 +165,7 @@ public class UsersController {
     @PutMapping("/leaveGroup")
     public void leaveGroup() throws Exception {
         var userId = usrSrv.getAuthenticatedUserId();
+        System.out.println(userId);
         usrSrv.leaveGroup(userId);
     }
 

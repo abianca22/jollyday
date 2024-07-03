@@ -16,6 +16,7 @@ export class UsersListComponent implements OnInit{
   isEditor: boolean = false;
   friendNames: any[] = [];
   friends: User[] = [];
+  username: any;
 
 
   constructor(private userService: UserService,
@@ -30,6 +31,7 @@ export class UsersListComponent implements OnInit{
       this.friends = data;
       this.friendNames = this.friends.map(friend => friend.username);
     });
+    this.username = this.loginSrv.getUsername();
     this.getUsers();
   }
 
@@ -44,7 +46,7 @@ export class UsersListComponent implements OnInit{
   }
 
   deleteGivenUser(username: string | null) {
-    this.userService.deleteUser(username).subscribe(data => {
+    this.userService.deleteUser(username).subscribe(() => {
       this.getUsers();
     });
   }

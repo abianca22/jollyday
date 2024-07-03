@@ -19,9 +19,7 @@ export class LoginService{
   }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.url}/signin`, {username, password}).pipe(map(user => {
-      return user;
-    }));
+    return this.http.post<any>(`${this.url}/signin`, {username, password});
   }
 
   getRole(): string {
@@ -30,6 +28,12 @@ export class LoginService{
 
   getUsername(): string {
     return this.cookieService.get("currentUsername");
+  }
+
+  deleteCookies(): void {
+    this.cookieService.delete('jwt', '/');
+    this.cookieService.delete('currentUserRole', '/');
+    this.cookieService.delete('currentUsername', '/');
   }
 
   logout(): Observable<any> {

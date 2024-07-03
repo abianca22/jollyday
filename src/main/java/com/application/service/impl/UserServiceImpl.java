@@ -75,18 +75,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void leaveGroup(Integer userId) throws AccessDeniedException, UserNotFoundException {
-        if (!this.currentUserIsAdministrator() && !this.getAuthenticatedUserId().equals(userId)) throw new AccessDeniedException();
+        if (!this.currentUserIsAdministrator() && !this.getAuthenticatedUserId().equals(userId)) throw new AccessDeniedException();;
+        System.out.println("A trecut de permisiuni");
         var usr = this.findUserById(userId).orElseThrow(UserNotFoundException::new);
         if (usr.getUserRole() == Role.EDITOR)
         {
             this.changeUserRole(userId, Role.USER);
+            System.out.println("A trecut de schimbarea rolului");
             groupRepo.updateLeader(usr.getGroup().getId(), null);
         }
         repo.leaveGroup(userId);
     }
     @Override
     public void changeUserRole(Integer userId, Role role) throws AccessDeniedException {
-        if(!currentUserIsAdministrator()) throw new AccessDeniedException();
+        if(!currentUserIsAdministrator() && !currentUserHasGivenId(userId) ) throw new AccessDeniedException();
         repo.updateRole(userId, role);
     }
 
@@ -162,8 +164,11 @@ public class UserServiceImpl implements UserService {
         List<EventDTO> eventDTOs = repo.findAllEvents(userId);
         for (EventDTO eventDTO : eventDTOs) {
             User collector = repo.findById(eventDTO.getCollectorId()).orElse(null);
-            User friend = repo.findById(eventDTO.getCelebratedUserId()).orElse(null);
-            Group grp = groupRepo.findById(eventDTO.getCollectingPlaceId()).orElse(null);
+            System.out.println("A trecut de gaseste colector " + collector + " sarbatoritul este: " + eventDTO.getCelebratedUserId());
+            User friend = eventDTO.getCelebratedUserId() != null ? repo.findById(eventDTO.getCelebratedUserId()).orElse(null) : null;
+            System.out.println("A trecut de gaseste sarbatorit " + friend);
+            Group grp = eventDTO.getCollectingPlaceId() != null ? groupRepo.findById(eventDTO.getCollectingPlaceId()).orElse(null): null;
+            System.out.println("A trecut de gaseste grup" + grp);
             Event ev = Event.builder()
                     .id(eventDTO.getId())
                     .celebratedUser(friend)
@@ -191,5 +196,16 @@ public class UserServiceImpl implements UserService {
             throw new AccessDeniedException();
         }
         repo.updateJoinStatus(userId, joinStatus);
+    }
+
+    @Override
+    public Optional<User> findUserByEmail(String email) {
+        return this.repo.findByEmail(email);
+    }
+
+    @Override
+    public void deleteUser(Integer userId) {
+        this.repo.setUserToNull(userId);
+        this.repo.deleteUser(userId);
     }
 }

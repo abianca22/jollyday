@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer>, CustomEventRepository {
-    Optional<List<Event>> findAllByCollectorUser(User collector);
-    Optional<List<Event>> findAllByCelebratedUser(User celebratedUser);
+    List<Event> findAllByCollectorUser(User collector);
+    List<Event> findAllByCelebratedUser(User celebratedUser);
+    Optional<Event> findById(Integer id);
 }

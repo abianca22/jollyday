@@ -74,6 +74,12 @@ export class GroupUsersListComponent {
   isLeader(leaderId: number, userId: number) {
     return leaderId === userId;
   }
+
+  leaveGroup(groupId: number) {
+    this.usrSrv.leaveGroupRequest(groupId).subscribe(data => {
+      this.router.navigate(["/groups"]);
+    });
+  }
   
 
 }

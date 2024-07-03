@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,17 +52,21 @@ public class AuthService {
     }
 
     public AuthRes signin(SignInReq req) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        req.getUsername(),
-                        req.getPassword()
-                )
-        );
-        var user = userRepo.findByUsername(req.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-        var jwtToken = jwtService.generateJwtToken(user);
-        return AuthRes.builder()
-                .jwtToken(jwtToken)
-                .build();
+        try {
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            req.getUsername(),
+                            req.getPassword()
+                    )
+            );
+            var user = userRepo.findByUsername(req.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+            var jwtToken = jwtService.generateJwtToken(user);
+            return AuthRes.builder()
+                    .jwtToken(jwtToken)
+                    .build();
+        } catch (BadCredentialsException e) {
+            return AuthRes.builder().jwtToken(null).build();
+        }
     }
 
 }

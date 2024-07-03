@@ -61,4 +61,7 @@ public interface UserService {
 
     void updateJoinStatus(Integer userId, JoinStatus joinStatus) throws AccessDeniedException;
 
+    Optional<User> findUserByEmail(String email);
+
+    void deleteUser(Integer userId);
 }

@@ -1,0 +1,35 @@
+<h2 class="text-center" style="margin-top: 50px;">Modifica detalii</h2>
+<div class="row">
+    <div class="col-3"></div>
+    <div class="container col-6" style="margin-top: 30px;">
+        <form (ngSubmit) = "onSubmit(userForm)" #userForm="ngForm" *ngIf="user != undefined">
+            <div class="form-group" style="margin-bottom: 3px;">
+            <input type="email" class="form-control" name="email" minlength="5" placeholder="Email" [(ngModel)] = "user.email"  #email="ngModel" pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$">
+            <div *ngIf="email.invalid && (email.dirty || email.touched)" class="alert alert-danger small">
+                <div *ngIf="email.errors?.['pattern']">Adresa de email trebuie sa respecte formatul standard</div>
+                <div *ngIf="email.errors?.['minlength']">Adresa de email trebuie sa aiba cel putin 5 caractere</div>
+            </div>
+            <div *ngIf="emailInvalid" class="alert alert-danger">Exista deja un cont cu aceasta adresa</div>      
+        </div>
+            <div class="form-group" style="margin-bottom: 3px;">
+                <input type="text" class="form-control" #firstName="ngModel" name="firstName"  placeholder="firstName" pattern="[A-Za-z\s]+" [(ngModel)] = "user.firstName">
+                <div *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)" class="alert alert-danger small">
+                    <div *ngIf="firstName.errors?.['pattern']">Prenumele poate contine doar litere</div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 3px;">
+                <input type="text" class="form-control" #lastName="ngModel" name="lastName"  placeholder="lastName" pattern="[A-Za-z\s]+" [(ngModel)] = "user.lastName">
+                <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)" class="alert alert-danger small">
+                    <div *ngIf="lastName.errors?.['pattern']">Numele poate contine doar litere</div>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 3px;">
+                <input type="date" class="form-control" #bday="ngModel" name="bday" placeholder="Birthday" [(ngModel)] = "user.birthday">
+
+            </div>
+            <button type="submit" class="btn btn-primary">Modifica</button>
+        </form>
+    </div>
+    <div class="col-3"></div>
+</div>

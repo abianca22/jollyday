@@ -14,6 +14,11 @@ export class SignupComponent implements OnInit{
   
   user: User = new User();
 
+  usernameInvalid: boolean = false;
+
+  emailInvalid: boolean = false;
+  hasPressedSubmit: boolean = false;
+
   constructor(private userSevice: UserService, private authSrv: LoginService, private router: Router) {
   }
   
@@ -39,9 +44,28 @@ export class SignupComponent implements OnInit{
     this.router.navigate(['/users']);
   }
 
-  onSubmit(): void {
-    console.log(this.user);
-    this.signUpUser();
-  }
-
+  onSubmit(userForm: any): void {
+    this.hasPressedSubmit = true;
+    this.userSevice.checkUsername(this.user.username).subscribe(data => {
+      if (data !== null && data !== undefined)
+        {this.usernameInvalid = true; console.log(this.usernameInvalid, data); this.hasPressedSubmit = false;}
+      else {
+        this.usernameInvalid = false;
+        this.userSevice.checkEmail(this.user.email).subscribe(data => {
+          if (data !== null && data !== undefined)
+          {
+            this.emailInvalid = true;
+            this.hasPressedSubmit = false;
+          }
+          else {
+            this.emailInvalid = false;
+            if (userForm.valid && this.emailInvalid == false && this.usernameInvalid == false) {
+              this.signUpUser();
+              this.hasPressedSubmit = false;
+            }
+          }
+        });
+      }
+    });
+}
 }

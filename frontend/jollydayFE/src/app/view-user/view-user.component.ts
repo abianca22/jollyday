@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../user';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../user.service';
+import { LoginService } from '../login.service';
 
 @Component({
   selector: 'app-view-user',
@@ -13,7 +14,9 @@ export class ViewUserComponent implements OnInit{
   username: string | null = null;
   user: any;
 
-  constructor(private actRt: ActivatedRoute, private usrSrv: UserService) {}
+
+  constructor(private actRt: ActivatedRoute, private usrSrv: UserService, private loginSrv: LoginService, private router: Router) {
+  }
 
   ngOnInit(): void {
     this.username = this.actRt.snapshot.params["username"];
@@ -29,4 +32,15 @@ export class ViewUserComponent implements OnInit{
     if (user.joinStatus == "NONE" || user.joinStatus == "PENDING") return false;
     return true;
   }
+
+  isOwner() {
+    return this.username === this.loginSrv.getUsername();
+  }
+
+  deleteAccount() {
+    this.usrSrv.deleteUser(this.loginSrv.getUsername()).subscribe(() => {
+      this.loginSrv.deleteCookies();
+      this.router.navigate(["/signup"]);
+  });
+}
 }

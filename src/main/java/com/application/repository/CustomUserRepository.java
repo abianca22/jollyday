@@ -42,4 +42,7 @@ public interface CustomUserRepository {
 
     List<EventDTO> findAllEvents(Integer userId);
 
+    void setUserToNull(Integer userId);
+
+    void deleteUser(Integer userId);
 }

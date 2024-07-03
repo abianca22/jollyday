@@ -17,6 +17,9 @@ import { GroupListComponent } from './group-list/group-list.component';
 import { GroupUsersListComponent } from './group-users-list/group-users-list.component';
 import { EventListComponent } from './event-list/event-list.component';
 import { AddGroupComponent } from './add-group/add-group.component';
+import { AdminGroupUpdateComponent } from './admin-group-update/admin-group-update.component';
+import { UserGroupUpdateComponent } from './user-group-update/user-group-update.component';
+import { UpdateUserDetailsComponent } from './update-user-details/update-user-details.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +34,10 @@ import { AddGroupComponent } from './add-group/add-group.component';
     GroupListComponent,
     GroupUsersListComponent,
     EventListComponent,
-    AddGroupComponent
+    AddGroupComponent,
+    AdminGroupUpdateComponent,
+    UserGroupUpdateComponent,
+    UpdateUserDetailsComponent
   ],
   imports: [
     FormsModule,

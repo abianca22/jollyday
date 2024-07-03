@@ -1,6 +1,6 @@
 <div class="container">
-    <h2>Adauga grup</h2>
-    <form (ngSubmit)="onSubmit(groupForm)" #groupForm="ngForm">
+    <h2>Modifica grup</h2>
+    <form (ngSubmit)="onSubmit(groupForm)" #groupForm="ngForm" *ngIf="group!=undefined">
       <div class="form-group">
         <label for="name">Group Name</label>
         <input type="text" class="form-control" id="name" required minlength="1" maxlength="20" [(ngModel)]="group.name" name="name" #name="ngModel">

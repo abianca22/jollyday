@@ -47,8 +47,7 @@ Event implements Serializable {
     private Double collectedAmount = 100.d;
 
     // in principiu, collectingPlace trebuie sa fie grupul de care apartine colectorul
-    // daca exista un singur grup, atunci va exista un grup de "rezerva" (de exemplu, in cadrul unei firme,
-    // poate fi reprezentat de o sala goala, unde nu lucreaza nimeni)
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "collecting_place_id", nullable = true)
     @OnDelete(action = OnDeleteAction.SET_NULL)

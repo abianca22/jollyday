@@ -1,3 +1,9 @@
+<br>
+<h3 class="text-center">Grupuri</h3>
+<br>
+<div class="text-center">
+<button *ngIf="isAdmin()" class="btn btn-info button-hover" routerLink="/addGroup">Adauga grup</button>
+</div>
 <div class="container mt-4" *ngIf="user != undefined">
     <div class="row">
       <div *ngFor="let group of groups" class="col-md-4 mb-4">
@@ -6,7 +12,7 @@
             <h5 class="card-title">{{ group.grp.name }}</h5>
             <p class="card-text">{{ group.grp.description }}</p>
             <p class="card-text"><strong>Lider: </strong><span *ngIf="hasLeader(group.ldr)">{{group.ldr.username}}</span><span *ngIf="!hasLeader(group.ldr)">Grupul nu are niciun lider</span></p>
-            <button (click)="viewUsers(group.grp.id, group.grp.name)" class="btn btn-primary">Vezi membri</button>
+            <button (click)="viewUsers(group.grp.id, group.grp.name)" *ngIf="(isAlreadyMember(group.grp.id) && user.joinStatus === 'ACCEPTED') || isAdmin()" class="btn btn-primary">Vezi membri</button>
             <button class="btn btn-primary" style="margin-left: 15px;" *ngIf="!isAlreadyMember(group.grp.id) && !isAdmin()" (click)="sendJoinRequest(group.grp.id)">Alatura-te</button>
             <span class=".text-primary" style="margin-left: 15px;" *ngIf="user.joinStatus == 'PENDING' && user.groupName == group.grp.name">In asteptare...</span>
             <button (click)="deleteGroup(group.grp.id)" class="btn btn-outline-danger" *ngIf="isAdmin()">Sterge</button>

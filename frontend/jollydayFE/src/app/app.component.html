@@ -6,16 +6,14 @@
 <!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
 <!-- * * * * * * * to get started with your project! * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- <nav class="navbar navbar-expand-sm bg-info">
-  <ul class="navbar-nav">
-    <li class="nav-item">
-      <a routerLink="users" routerLinkActive="routerLinkActive" class="nav-link">See all users</a>
-    </li>
-    <li class="nav-item">
-      <a routerLink="add-user" routerLinkActive="routerLinkActive" class="nav-link">Add user</a>
-    </li>
-  </ul>
-</nav> -->
+<nav *ngIf="isLoggedIn">
+  <div class="d-flex justify-content-between bar">
+<button class="btn btn-info button-hover" routerLink="/users">Utilizatori</button>
+<button class="btn btn-info button-hover" routerLink="/groups">Grupuri</button>
+<button class="btn btn-info button-hover" routerLink="/events">Evenimente</button>
+<app-logout></app-logout>
+</div>
+</nav>
 <main class="main">
   <div class="content">
     <div class="container">
@@ -23,12 +21,3 @@
   </div>
   </div>
 </main>
-<footer>
-  <div class="footer">
-    <div class="container text-center small">
-      <span>Andrei Bianca-Filofteia, Licenta 2024</span><br>
-      <span>Facultatea de Matematica si Informatica</span><br>
-      <span>Universitatea din Bucuresti</span>
-    </div>
-  </div>
-</footer>

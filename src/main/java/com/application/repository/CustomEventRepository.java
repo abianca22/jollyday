@@ -2,6 +2,7 @@ package com.application.repository;
 
 import com.application.model.Event;
 import com.application.model.User;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,4 +19,5 @@ public interface CustomEventRepository {
 
     List<Integer> getAllParticipantIds(Integer celebratedId);
 
+    Integer getEvent(Integer collector, Integer user, LocalDate creationDate, Integer group);
 }

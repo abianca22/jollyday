@@ -57,7 +57,7 @@ public class UserRepositoryImpl implements CustomUserRepository {
     public void updateGroup(Integer userId, Integer groupId) {
         em.createNativeQuery("UPDATE jd_user SET group_id = ?, join_status = ? where id = ?")
                 .setParameter(1, groupId)
-                .setParameter(2, JoinStatus.ACCEPTED.toString())
+                .setParameter(2, groupId != null ? JoinStatus.ACCEPTED.toString() : JoinStatus.NONE)
                 .setParameter(3, userId)
                 .executeUpdate();
     }
@@ -133,11 +133,11 @@ public class UserRepositoryImpl implements CustomUserRepository {
         for(Object[] obj: friends) {
             var grpid = obj[5] != null ? obj[5].toString() : null;
             UserDTO userDTO = UserDTO.builder()
-                    .username(obj[0].toString())
-                    .lastName(obj[1].toString())
-                    .firstName(obj[2].toString())
-                    .email(obj[3].toString())
-                    .birthday(LocalDate.parse(obj[4].toString()))
+                    .username(obj[0] == null ? null : obj[0].toString())
+                    .lastName(obj[1] == null ? null : obj[0].toString())
+                    .firstName(obj[2] == null ? null : obj[0].toString())
+                    .email(obj[3] == null ? null : obj[0].toString())
+                    .birthday(obj[4] == null ? null : LocalDate.parse(obj[4].toString()))
                     .groupId(Integer.getInteger(grpid))
                     .build();
             celebratedFriends.add(userDTO);
@@ -181,16 +181,39 @@ public class UserRepositoryImpl implements CustomUserRepository {
         List<EventDTO> events = new ArrayList<>();
         for(Object[] obj: userEvents) {
             EventDTO ev = EventDTO.builder()
-                    .id((Integer) obj[0])
-                    .collectedAmount((Double) obj[1])
-                    .creationDate(LocalDate.parse(obj[2].toString()))
-                    .celebratedUserId((Integer) obj[3])
-                    .collectingPlaceId((Integer) obj[4])
-                    .collectorId((Integer) obj[5])
+                    .id(obj[0] == null ? null : (Integer) obj[0])
+                    .collectedAmount(obj[1] == null ? null : (Double) obj[1])
+                    .creationDate(obj[2] == null ? null : LocalDate.parse(obj[2].toString()))
+                    .celebratedUserId(obj[3] == null ? null : (Integer) obj[3])
+                    .collectingPlaceId(obj[4] == null ? null :(Integer) obj[4])
+                    .collectorId(obj[5] == null ? null : (Integer) obj[5])
                     .build();
             events.add(ev);
         }
         return events;
+    }
+
+    @Override
+    public void setUserToNull(Integer userId) {
+        System.out.println("aici");
+        em.createNativeQuery("UPDATE jd_event SET collector_id = null WHERE collector_id = ?")
+                .setParameter(1, userId)
+                .executeUpdate();
+        em.createNativeQuery("UPDATE jd_event SET celebrated_user_id = null WHERE celebrated_user_id = ?")
+                .setParameter(1, userId)
+                .executeUpdate();
+        em.createNativeQuery("DELETE FROM joins WHERE participant_id = ?").setParameter(1, userId).executeUpdate();
+        System.out.println("aici2");
+        em.createNativeQuery("DELETE FROM participates_for WHERE participant_id = ?").setParameter(1, userId).executeUpdate();
+        em.createNativeQuery("DELETE FROM participates_for WHERE celebrated_id = ?").setParameter(1, userId).executeUpdate();
+        System.out.println("aici3");
+        em.createNativeQuery("UPDATE jd_group SET leader_id = null WHERE leader_id = ?").setParameter(1, userId).executeUpdate();
+    }
+
+    @Override
+    public void deleteUser(Integer userId) {
+        this.setUserToNull(userId);
+        em.createNativeQuery("DELETE FROM jd_user WHERE id = ?").setParameter(1, userId).executeUpdate();
     }
 
 }

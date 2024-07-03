@@ -2,26 +2,52 @@
 <div class="row">
     <div class="col-3"></div>
     <div class="container col-6" style="margin-top: 30px;">
-        <form (ngSubmit) = "onSubmit()">
+        <form (ngSubmit) = "onSubmit(userForm)" #userForm="ngForm">
             <div class="form-group" style="margin-bottom: 3px;">
-            <input type="email" class="form-control" name="email" placeholder="Email" [(ngModel)] = "user.email" required="required">
+            <input type="email" class="form-control" name="email" minlength="5" placeholder="Email" [(ngModel)] = "user.email"  #email="ngModel" pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" required="required">
+            <div *ngIf="email.invalid && (email.dirty || email.touched)" class="alert alert-danger small">
+                <div *ngIf="email.errors?.['required']">Camp obligatoriu</div>
+                <div *ngIf="email.errors?.['pattern']">Adresa de email trebuie sa respecte formatul standard</div>
+                <div *ngIf="email.errors?.['minlength']">Adresa de email trebuie sa aiba cel putin 5 caractere</div>
+            </div>
+            <div *ngIf="emailInvalid" class="alert alert-danger">Exista deja un cont cu aceasta adresa</div>   
+            <div class="alert alert-danger small" *ngIf="hasPressedSubmit">Camp obligatoriu</div>    
+        </div>
+            <div class="form-group" style="margin-bottom: 3px;">
+                <input type="text" class="form-control" #username="ngModel" name="username" minlength="5" maxlength="18" placeholder="Username" pattern="^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$" [(ngModel)] = "user.username" required="required">
+                <div *ngIf="username.invalid && (username.dirty || username.touched)" class="alert alert-danger small">
+                    <div *ngIf="username.errors?.['required']">Camp obligatoriu</div>
+                    <div *ngIf="username.errors?.['pattern']">Numele trebuie sa aiba cel putin 3 si cel mult 18 caractere</div>
+                </div>
+                <div *ngIf="usernameInvalid" class="alert alert-danger small">Acest nume de utilizator deja exista</div>
+                <div class="alert alert-danger small" *ngIf="hasPressedSubmit">Camp obligatoriu</div> 
+
+            </div>
+  
+            <div class="form-group" style="margin-bottom: 3px;">
+            <input type="password" #password="ngModel" class="form-control" pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\S+$).{8,20}$" minlength="1" name="password" placeholder="Password" [(ngModel)] = "user.password" required="required">
+            <div *ngIf="password.invalid && (password.dirty || password.touched)" class="alert alert-danger small">
+                <div *ngIf="password.errors?.['required']">Camp obligatoriu</div>
+                <div *ngIf="password.errors?.['pattern']">Parola trebuie sa aiba minim 8, maxim 20 de caractere: cel putin o litera mica, cel putin o litera mare, cel putin o cifra si cel putin un caracter special</div>
+                <div *ngIf="password.errors?.['minlength']">Parola trebuie sa aiba minim 8, maxim 20 de caractere: cel putin o litera mica, cel putin o litera mare, cel putin o cifra si cel putin un caracter special</div>  
+            </div>
+            <div class="alert alert-danger small" *ngIf="hasPressedSubmit">Camp obligatoriu</div> 
             </div>
             <div class="form-group" style="margin-bottom: 3px;">
-                <input type="text" class="form-control" name="username" placeholder="Username" [(ngModel)] = "user.username" required="required">
+                <input type="text" class="form-control" name="firstname" placeholder="First Name" [(ngModel)] = "user.firstName">
             </div>
             <div class="form-group" style="margin-bottom: 3px;">
-            <input type="password" class="form-control" name="password" placeholder="Password" [(ngModel)] = "user.password" required="required">
+                <input type="text" class="form-control" name="lastname" placeholder="Last Name" [(ngModel)] = "user.lastName">
             </div>
             <div class="form-group" style="margin-bottom: 3px;">
-                <input type="text" class="form-control" name="firstname" placeholder="First Name" [(ngModel)] = "user.firstName" required="required">
-            </div>
-            <div class="form-group" style="margin-bottom: 3px;">
-                <input type="text" class="form-control" name="lastname" placeholder="Last Name" [(ngModel)] = "user.lastName" required="required">
-            </div>
-            <div class="form-group" style="margin-bottom: 3px;">
-                <input type="date" class="form-control" name="bday" placeholder="Birthday" [(ngModel)] = "user.birthday" required="required">
+                <input type="date" class="form-control" #bday="ngModel" name="bday" placeholder="Birthday" [(ngModel)] = "user.birthday" required="required">
+                <div *ngIf="bday.invalid && (bday.dirty || bday.touched)" class="alert alert-danger small">
+                    <div *ngIf="bday.errors?.['required']">Camp obligatoriu</div>
+                </div>
+                <div class="alert alert-danger small" *ngIf="hasPressedSubmit">Camp obligatoriu</div> 
             </div>
             <button type="submit" class="btn btn-primary">Inregistreaza-te</button>
+            <button class="btn btn-primary" routerLink="/signin">Conecteaza-te</button>
         </form>
     </div>
     <div class="col-3"></div>

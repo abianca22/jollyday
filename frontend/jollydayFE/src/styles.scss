@@ -10,3 +10,28 @@
     background-color: rgb(80, 119, 154);
     color: rgb(161, 189, 255);
 }
+
+.no-link {
+    text-decoration: none;
+    color: white;
+}
+
+.bar {
+    background-color: #2a9997;
+}
+
+.button-hover {
+    background-color: #2a9997;
+    border: none;
+    color: white !important;
+    padding: 15px;
+}
+
+.button-hover:hover {
+    background-color: #1d6b6a !important;
+}
+
+button {
+    margin: 5px;
+}
+

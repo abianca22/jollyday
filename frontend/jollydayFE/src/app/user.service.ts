@@ -43,11 +43,11 @@ export class UserService {
 
   modifyUser(username: string | null, sendUsr: User): Observable<Object> {
     sendUsr.birthday = Utils.formatDate(sendUsr.birthday);
-    return this.HttpClient.put(`${this.url}/updateUser/${username}`, sendUsr, {headers: this.createHeader()});
+    return this.HttpClient.put(`${this.url}/users/updateUser/${username}`, sendUsr, {headers: this.createHeader()});
   }
 
-  deleteUser(username: string | null): Observable<Object> {
-    return this.HttpClient.delete(`${this.url}/users/${username}`);
+  deleteUser(username: string | null): Observable<void> {
+    return this.HttpClient.delete<void>(`${this.url}/users/deleteUser/${username}`);
   }
 
   getCurrentUser(tkn: string): Observable<any> {
@@ -72,7 +72,7 @@ export class UserService {
   }
 
   leaveGroupRequest(groupId: number): Observable<void> {
-    return this.HttpClient.put<void>(`${this.url}/users/leaveGroup/${groupId}`, {headers: this.createHeader()});
+    return this.HttpClient.put<void>(`${this.url}/users/leaveGroup`, {headers: this.createHeader()});
   }
 
   acceptJoinRequest(userId: number, groupId: number): Observable<void> {
@@ -81,6 +81,14 @@ export class UserService {
 
   excludeFromGroup(userId: number): Observable<void> {
     return this.HttpClient.put<void>(`${this.url}/users/excludeFromGroup/${userId}`, {headers: this.createHeader()});
+  }
+
+  checkUsername(username: string | null): Observable<User|any> {
+    return this.HttpClient.get<User|any>(`${this.url}/auth/checkUsername/${username}`);
+  }
+
+  checkEmail(email: string | null): Observable<User|any> {
+    return this.HttpClient.get<User|any>(`${this.url}/auth/checkEmail/${email}`);
   }
 
 

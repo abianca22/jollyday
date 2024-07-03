@@ -1,5 +1,11 @@
-<app-logout></app-logout>
 <h3 class="text-center" style="margin-top: 20px;">Utilizatori ai grupului {{groupName}}</h3>
+<div *ngIf="group != undefined && isAdmin()" class="text-center">
+    <button class="btn btn-info button-hover" [routerLink]="['../../../updateGroup', group.name]">Modifica grup</button>
+</div>
+<div *ngIf="group != undefined && !isAdmin()" class="text-center">
+    <button (click)="leaveGroup(group.id)" class="btn btn-danger">Paraseste grupul</button>
+    <button class="btn btn-primary" [routerLink]="['../../../updateGroupDescription', group.name]">Modifica grup</button>
+</div>
 <div class="row container" style="margin-top: 100px;" *ngIf="group != undefined">
     <div class="col-2"></div>
     <div class="col-8">
@@ -33,4 +39,5 @@
         </table>
     </div>
     <div class="col-2"></div>
+
 </div>
