@@ -35,4 +35,9 @@ public interface GroupService {
     void deleteGroupById(Integer groupId) throws AccessDeniedException;
 
     List<Group> getAllGroups();
+
+    Optional<Group> getGroupByName(String name);
+
+    void deleteGroup(Integer id) throws AccessDeniedException;
+
 }

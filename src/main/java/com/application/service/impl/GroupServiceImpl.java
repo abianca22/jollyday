@@ -5,6 +5,7 @@ import com.application.exceptions.GroupNameAlreadyExists;
 import com.application.exceptions.LeaderAlreadyExistsForAnotherGroup;
 import com.application.exceptions.UserNotFoundException;
 import com.application.model.Group;
+import com.application.model.Role;
 import com.application.model.User;
 import com.application.model.dto.GroupDTO;
 import com.application.repository.GroupRepository;
@@ -46,6 +47,11 @@ public class GroupServiceImpl implements GroupService {
     public void updateLeaderOfGroup(Integer groupId, Integer leaderId) throws AccessDeniedException, LeaderAlreadyExistsForAnotherGroup {
         if (!usrService.currentUserIsAdministrator()) throw new AccessDeniedException();
         if (isAlreadyLeader(leaderId, groupId)) throw new LeaderAlreadyExistsForAnotherGroup();
+        var grp = grpRepo.findById(groupId).orElse(null);
+        if (grp != null && grp.getLeader() != null && !grp.getLeader().getId().equals(leaderId)) {
+            usrService.changeUserRole(grp.getLeaderId(), Role.USER);
+        }
+        usrService.changeUserRole(leaderId, Role.EDITOR);
         grpRepo.updateLeader(groupId, leaderId);
     }
 
@@ -73,6 +79,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Optional<Group> getGroupByName(String name) {
+        return grpRepo.findByName(name);
+    }
+
+    @Override
     public Optional<Group> getGroupById(Integer id) {
         return grpRepo.findById(id);
     }
@@ -81,23 +92,39 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void addGroup(GroupDTO group) throws AccessDeniedException, UserNotFoundException, GroupNameAlreadyExists {
         if(!usrService.currentUserIsAdministrator()) throw new AccessDeniedException();
-        User user = null;
-        var optUsr = usrRepo.findById(group.getLeaderId());
-        if (optUsr.isPresent())
-            user = optUsr.get();
-        else throw new UserNotFoundException();
-        if (this.groupExists(group)) throw new GroupNameAlreadyExists();
-        Group groupToAdd = Group.builder()
-                .name(group.getName())
-                .description(group.getDescription())
-                .leader(user)
-                .build();
+        Group groupToAdd;
+        if (group.getLeaderId() != null) {
+            User user = null;
+            var optUsr = usrRepo.findById(group.getLeaderId());
+            if (optUsr.isPresent())
+                user = optUsr.get();
+            else throw new UserNotFoundException();
+            if (this.groupExists(group)) throw new GroupNameAlreadyExists();
+            groupToAdd = Group.builder()
+                    .name(group.getName())
+                    .description(group.getDescription())
+                    .leader(user)
+                    .build();
+        }
+        else {
+            if (this.groupExists(group)) throw new GroupNameAlreadyExists();
+            groupToAdd = Group.builder()
+                    .name(group.getName())
+                    .description(group.getDescription())
+                    .build();
+        }
         grpRepo.save(groupToAdd);
     }
 
     @Override
     public Optional<Group> findGroupByLeader(User leader) {
         return grpRepo.findByLeader(leader);
+    }
+
+    @Override
+    public void deleteGroup(Integer groupId) throws AccessDeniedException {
+        if (!this.usrService.currentUserIsAdministrator()) throw new AccessDeniedException();
+        grpRepo.deleteGroup(groupId);
     }
 
 }

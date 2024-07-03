@@ -2,6 +2,7 @@ package com.application.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 @Table(name = "jdEvent")
-public class Event implements Serializable {
+public class
+Event implements Serializable {
     @Id
     @GeneratedValue
     private Integer id;
@@ -48,7 +50,7 @@ public class Event implements Serializable {
     // daca exista un singur grup, atunci va exista un grup de "rezerva" (de exemplu, in cadrul unei firme,
     // poate fi reprezentat de o sala goala, unde nu lucreaza nimeni)
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "collecting_place_id")
+    @JoinColumn(name = "collecting_place_id", nullable = true)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JsonBackReference("groupEvents")
     private Group collectingPlace;
@@ -59,6 +61,21 @@ public class Event implements Serializable {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private LocalDate creationDate;
+
+    @JsonGetter("collectingPlaceName")
+    public String getCollectingPlaceName() {
+        return this.collectingPlace != null ? this.collectingPlace.getName() : null;
+    }
+
+    @JsonGetter("celebratedName")
+    public String getCelebratedName() {
+        return this.celebratedUser != null ? this.celebratedUser.getUsername() : null;
+    }
+
+    @JsonGetter("collectorName")
+    public String getCollectorName() {
+        return this.collectorUser != null ? this.collectorUser.getUsername() : null;
+    }
 
     @Override
     public boolean equals(Object o) {

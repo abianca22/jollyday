@@ -1,5 +1,5 @@
 <h5>User details</h5>
-<div>
+<div *ngIf="user !== undefined">
     <div>
         <label><b>Username: </b></label> {{user.username}}
     </div>
@@ -16,6 +16,8 @@
         <label><b>Birthday: </b></label> {{user.birthday}}
     </div>
     <div>
-        <label><b>Group: </b></label> {{user.group !== null ? user.group.name : null}}
+        <label><b>Group: </b></label> 
+        <span *ngIf="isAccepted(user); else noGroup">{{user.groupName}}</span>
+        <ng-template #noGroup><span>Momentan utilizatorul nu apartine niciunui grup</span></ng-template>
     </div>
 </div>

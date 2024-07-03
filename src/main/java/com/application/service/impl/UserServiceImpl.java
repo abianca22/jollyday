@@ -1,9 +1,11 @@
 package com.application.service.impl;
 
 import com.application.exceptions.AccessDeniedException;
-import com.application.model.Role;
-import com.application.model.User;
+import com.application.exceptions.UserNotFoundException;
+import com.application.model.*;
+import com.application.model.dto.EventDTO;
 import com.application.model.dto.UserDTO;
+import com.application.repository.GroupRepository;
 import com.application.repository.UserRepository;
 import com.application.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repo;
+    private final GroupRepository groupRepo;
     @Override
     public Optional<User> findUserById(Integer userId) {
         return repo.findById(userId);
@@ -64,10 +68,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeUserGroup(Integer userId, Integer groupId) {
+    public void changeUserGroup(Integer userId, Integer groupId) throws AccessDeniedException {
+        if (!this.currentUserIsAdministrator()) throw new AccessDeniedException();
         repo.updateGroup(userId, groupId);
     }
 
+    @Override
+    public void leaveGroup(Integer userId) throws AccessDeniedException, UserNotFoundException {
+        if (!this.currentUserIsAdministrator() && !this.getAuthenticatedUserId().equals(userId)) throw new AccessDeniedException();
+        var usr = this.findUserById(userId).orElseThrow(UserNotFoundException::new);
+        if (usr.getUserRole() == Role.EDITOR)
+        {
+            this.changeUserRole(userId, Role.USER);
+            groupRepo.updateLeader(usr.getGroup().getId(), null);
+        }
+        repo.leaveGroup(userId);
+    }
     @Override
     public void changeUserRole(Integer userId, Role role) throws AccessDeniedException {
         if(!currentUserIsAdministrator()) throw new AccessDeniedException();
@@ -80,7 +96,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addCelebratedFriendToUser(Integer userId, Integer friendId) throws AccessDeniedException {
+    public void addCelebratedFriendToUser(Integer userId, Integer friendId) throws Exception {
         if (currentUserHasGivenId(userId)) repo.addCelebratedUser(userId, friendId);
         else throw new AccessDeniedException();
     }
@@ -98,6 +114,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Integer getAuthenticatedUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(auth);
+        System.out.println(auth.isAuthenticated());
         if(auth != null && auth.isAuthenticated()) {
                 User currentUser = (auth.getPrincipal() instanceof User) ? (User) auth.getPrincipal() : null;
                 return currentUser != null ? currentUser.getId() : null;
@@ -131,5 +149,47 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAllUsers() {
         return repo.findAll();
+    }
+
+    @Override
+    public List<User> findUsersByGroupId(Integer groupId) {
+        return repo.findUsersByGroup(groupId);
+    }
+
+    @Override
+    public List<Event> findAllEvents(Integer userId) {
+        List<Event> events = new ArrayList<>();
+        List<EventDTO> eventDTOs = repo.findAllEvents(userId);
+        for (EventDTO eventDTO : eventDTOs) {
+            User collector = repo.findById(eventDTO.getCollectorId()).orElse(null);
+            User friend = repo.findById(eventDTO.getCelebratedUserId()).orElse(null);
+            Group grp = groupRepo.findById(eventDTO.getCollectingPlaceId()).orElse(null);
+            Event ev = Event.builder()
+                    .id(eventDTO.getId())
+                    .celebratedUser(friend)
+                    .collectorUser(collector)
+                    .creationDate(eventDTO.getCreationDate())
+                    .collectedAmount(eventDTO.getCollectedAmount())
+                    .collectingPlace(grp)
+                    .build();
+            events.add(ev);
+        }
+        return events;
+    }
+
+    @Override
+    public void joinGroupRequest(Integer userId, Integer groupId) throws AccessDeniedException {
+        if (!this.getAuthenticatedUserId().equals(userId)) {
+            throw new AccessDeniedException();
+        }
+        repo.joinGroupRequest(userId, groupId);
+    }
+
+    @Override
+    public void updateJoinStatus(Integer userId, JoinStatus joinStatus) throws AccessDeniedException {
+        if (!this.currentUserIsAdministrator()) {
+            throw new AccessDeniedException();
+        }
+        repo.updateJoinStatus(userId, joinStatus);
     }
 }

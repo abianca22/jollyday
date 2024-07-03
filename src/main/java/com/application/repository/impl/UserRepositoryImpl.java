@@ -1,17 +1,19 @@
 package com.application.repository.impl;
 
+import com.application.model.JoinStatus;
 import com.application.model.Role;
 import com.application.model.User;
+import com.application.model.dto.EventDTO;
 import com.application.model.dto.UserDTO;
 import com.application.repository.CustomUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.hibernate.mapping.Join;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Transactional
 public class UserRepositoryImpl implements CustomUserRepository {
@@ -53,14 +55,41 @@ public class UserRepositoryImpl implements CustomUserRepository {
 
     @Override
     public void updateGroup(Integer userId, Integer groupId) {
-        em.createNativeQuery("UPDATE jd_user SET group_id = ? where id = ?")
+        em.createNativeQuery("UPDATE jd_user SET group_id = ?, join_status = ? where id = ?")
                 .setParameter(1, groupId)
+                .setParameter(2, JoinStatus.ACCEPTED.toString())
+                .setParameter(3, userId)
+                .executeUpdate();
+    }
+
+    @Override
+    public void updateJoinStatus(Integer userId, JoinStatus joinStatus) {
+        em.createNativeQuery("UPDATE jd_user SET join_status = ? where id = ?")
+                .setParameter(1, joinStatus.toString())
                 .setParameter(2, userId)
                 .executeUpdate();
     }
 
     @Override
-    public boolean addCelebratedUser(Integer userId, Integer friendId) {
+    public void joinGroupRequest(Integer userId, Integer groupId) {
+        em.createNativeQuery("UPDATE jd_user SET group_id = ?, join_status = ? where id = ?")
+                .setParameter(1, groupId)
+                .setParameter(2, JoinStatus.PENDING.toString())
+                .setParameter(3, userId)
+                .executeUpdate();
+    }
+
+    @Override
+    public void leaveGroup(Integer userId) {
+        em.createNativeQuery("UPDATE jd_user SET group_id = null, join_status = ? where id = ?")
+                .setParameter(1, JoinStatus.NONE.toString())
+                .setParameter(2, userId)
+                .executeUpdate();
+    }
+
+    @Override
+    public boolean addCelebratedUser(Integer userId, Integer friendId) throws Exception {
+        if (userId.equals(friendId)) throw new Exception("Cannot join the same id");
         var ifExists = (Long) em.createNativeQuery("SELECT COUNT(*) FROM participates_for WHERE participant_id = ? AND celebrated_id = ?")
                         .setParameter(1, userId)
                         .setParameter(2, friendId)
@@ -85,8 +114,8 @@ public class UserRepositoryImpl implements CustomUserRepository {
 
     @Override
     public void updateRole(Integer userId, Role role) {
-        em.createNativeQuery("UPDATE jd_user SET role = ? where id = ?")
-                .setParameter(1, role)
+        em.createNativeQuery("UPDATE jd_user SET user_role = ? where id = ?")
+                .setParameter(1, role.toString())
                 .setParameter(2, userId)
                 .executeUpdate();
     }
@@ -122,6 +151,46 @@ public class UserRepositoryImpl implements CustomUserRepository {
                 .setParameter(1, userId)
                 .getResultList();
         return collectingEvents.size();
+    }
+
+    public List<User> findUsersByGroup(Integer groupId) {
+        List<Object[]> usersInGroup = em.createNativeQuery("SELECT username, last_name, first_name, id, join_status FROM jd_user WHERE group_id = ? ORDER BY join_status DESC, username ASC LIMIT 50").setParameter(1, groupId)
+                .setParameter(1, groupId)
+                .getResultList();
+        List<User> users = new ArrayList<>();
+        for(Object[] obj: usersInGroup) {
+            JoinStatus joinStatus = null;
+            if (obj[4].equals("PENDING")) joinStatus = JoinStatus.PENDING;
+            if (obj[4].equals("ACCEPTED")) joinStatus = JoinStatus.ACCEPTED;
+            if (obj[4].equals("NONE")) joinStatus = JoinStatus.NONE;
+            User user = User.builder()
+                    .username(obj[0].toString())
+                    .lastName(obj[1].toString())
+                    .firstName(obj[2].toString())
+                    .id((Integer) obj[3])
+                    .joinStatus(joinStatus)
+                    .build();
+            users.add(user);
+        }
+        return users;
+    }
+
+    @Override
+    public List<EventDTO> findAllEvents(Integer userId) {
+        List<Object[]> userEvents = em.createNativeQuery("SELECT id, collected_amount, creation_date, celebrated_user_id, collecting_place_id, collector_id FROM jd_event, joins WHERE joins.participant_id = ? AND joins.event_id = jd_event.id").setParameter(1, userId).getResultList();
+        List<EventDTO> events = new ArrayList<>();
+        for(Object[] obj: userEvents) {
+            EventDTO ev = EventDTO.builder()
+                    .id((Integer) obj[0])
+                    .collectedAmount((Double) obj[1])
+                    .creationDate(LocalDate.parse(obj[2].toString()))
+                    .celebratedUserId((Integer) obj[3])
+                    .collectingPlaceId((Integer) obj[4])
+                    .collectorId((Integer) obj[5])
+                    .build();
+            events.add(ev);
+        }
+        return events;
     }
 
 }

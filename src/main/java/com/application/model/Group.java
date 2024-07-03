@@ -1,6 +1,7 @@
 package com.application.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -8,6 +9,10 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -23,8 +28,12 @@ public class Group implements Serializable {
     @GeneratedValue
     private Integer id;
 
+    @NotBlank(message="Denumirea este obligatorie")
+    @Max(value = 20, message = "Denumirea nu trebuie sa depaseasca 20 de caractere")
+    @Min(value = 1, message = "Denumirea trebuie sa contina cel putin un caracter")
     @Column(unique = true)
     private String name;
+    @Max(value = 200, message = "Denumirea nu trebuie sa depaseasca 200 de caractere")
     private String description;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.SET_NULL)
@@ -64,5 +73,10 @@ public class Group implements Serializable {
                 ", description='" + description + '\'' +
                 ", leaderId=" + (leader != null ? leader.getId() : null) +
                 '}';
+    }
+
+    @JsonGetter("leaderId")
+    public Integer getLeaderId() {
+        return leader != null ? leader.getId() : null;
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
 
@@ -32,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        // extragem header-ul pentru autorizare, care contine bearer token
         final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
         final String username;
@@ -42,7 +42,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwtToken = authHeader.substring(7);
+
         username = jwtService.getUsername(jwtToken);
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails user = this.userDetailsService.loadUserByUsername(username);
             if (jwtService.isValid(jwtToken, user) && !jwtList.alreadyInBlacklist(jwtToken)) {
@@ -53,8 +55,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 authJwtToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authJwtToken);
+
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

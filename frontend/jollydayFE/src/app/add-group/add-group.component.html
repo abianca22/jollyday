@@ -1,0 +1,24 @@
+<div class="container">
+    <h2>Add New Group</h2>
+    <form (ngSubmit)="onSubmit(groupForm)" #groupForm="ngForm">
+      <div class="form-group">
+        <label for="name">Group Name</label>
+        <input type="text" class="form-control" id="name" required minlength="1" maxlength="20" [(ngModel)]="group.name" name="name" #name="ngModel">
+        <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+          <div *ngIf="name.errors?.['required']">Denumirea este obligatorie</div>
+          <div *ngIf="name.errors?.['minlength']">Denumirea trebuie sa aiba cel putin un caracter</div>
+          <div *ngIf="name.errors?.['maxlength']">Denumirea trebuie sa aiba cel mult 20 de caractere</div>
+        </div>
+        <div *ngIf="groupNameInvalid" class="alert alert-danger">Denumirea trebuie sa fie unica</div>
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control" id="description" maxlength="200" [(ngModel)]="group.description" name="description" #description="ngModel"></textarea>
+        <div *ngIf="description.invalid && (description.dirty || description.touched)" class="alert alert-danger">
+          <div *ngIf="description.errors?.['maxlength']">Descrierea nu poate avea mai mult de 200 de caractere.</div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="groupForm.invalid">Submit</button>
+    </form>
+  </div>
+  

@@ -1,5 +1,6 @@
 package com.application.repository;
 
+import com.application.model.Event;
 import com.application.model.User;
 
 import java.time.LocalDate;

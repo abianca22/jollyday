@@ -66,4 +66,20 @@ public class GroupRepositoryImpl implements CustomGroupRepository {
                 .getSingleResult();
         return nameExists == 1;
     }
+
+    @Override
+    public void setGroupToNull(Integer groupId) {
+        em.createNativeQuery("UPDATE jd_event SET collecting_place_id = null WHERE collecting_place_id = ?")
+                .setParameter(1, groupId).executeUpdate();
+        em.createNativeQuery("UPDATE jd_user SET group_id = null WHERE group_id = ?").setParameter(1, groupId).executeUpdate();
+
+    }
+
+    @Override
+    public void deleteGroup(Integer groupId) {
+        this.setGroupToNull(groupId);
+        em.createNativeQuery("DELETE FROM jd_group WHERE id = ?").setParameter(1, groupId).executeUpdate();
+    }
+
+
 }

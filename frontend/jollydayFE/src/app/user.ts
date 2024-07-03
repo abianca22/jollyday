@@ -1,3 +1,4 @@
+import { join } from "path";
 import { Group } from "./group";
 
 export class User {
@@ -10,6 +11,7 @@ export class User {
     birthday: string | null;
     group: Group | null;
     role: String | null;
+    joinStatus: String | null;
     jwtToken: String | null;
 
     constructor(username: string | null = null,
@@ -21,7 +23,8 @@ export class User {
                 id: number | null = null, 
                 group: Group | null = null, 
                 role: String | null = null,
-                token: String | null = null) {
+                token: String | null = null,
+                joinStatus: String | null = null) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -32,6 +35,7 @@ export class User {
         this.password = password;
         this.role = role;
         this.jwtToken = token;
+        this.joinStatus = joinStatus;
     }
 
 }

@@ -10,13 +10,12 @@ import { response } from 'express';
 })
 class NavigationService {
 
-  private url: String = "http://localhost:8080/jollyday/auth/loggedInUser";
+  private url: String = "http://localhost:8080/jollyday/auth";
 
   constructor(private rt: Router, private loginSrv: LoginService, private http: HttpClient) { }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    this.http.get(`${this.url}`).subscribe(data => this.loginSrv.loggedInSubjectSetter(data));
-    if(this.loginSrv.loggedInValue.jwtToken !== 'token expirat') return true;
+    if(this.loginSrv.getToken() != undefined && this.loginSrv.getToken() != '') return true;
     else {
       this.rt.navigate(['/signin']);
       return false;

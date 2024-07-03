@@ -1,9 +1,8 @@
-package com.application.demo;
+package com.application.controller.demo;
 
 import com.application.exceptions.AccessDeniedException;
 import com.application.exceptions.UserNotFoundException;
 import com.application.exceptions.UserNotInGroup;
-import com.application.model.Group;
 import com.application.model.User;
 import com.application.model.dto.GroupDTO;
 import com.application.model.dto.UserDTO;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -52,7 +50,7 @@ public class DemoController {
     }
 
     @PostMapping("/{userId}/wantsToParticipateFor/{friendId}")
-    public List<UserDTO> insertParticipateFor(@PathVariable Integer userId, @PathVariable Integer friendId) throws UserNotFoundException, AccessDeniedException, UserNotInGroup {
+    public List<UserDTO> insertParticipateFor(@PathVariable Integer userId, @PathVariable Integer friendId) throws Exception {
         User user = usrRepo.findById(userId).orElseThrow(() -> new UserNotFoundException("Could not find user with the given id!"));
         User friend = usrRepo.findById(friendId).orElseThrow(() -> new UserNotFoundException("Could not find user with the given id!"));
         usrService.addCelebratedFriendToUser(userId, friendId);

@@ -1,6 +1,9 @@
 package com.application.service;
 
 import com.application.exceptions.AccessDeniedException;
+import com.application.exceptions.UserNotFoundException;
+import com.application.model.Event;
+import com.application.model.JoinStatus;
 import com.application.model.Role;
 import com.application.model.User;
 import com.application.model.dto.UserDTO;
@@ -24,13 +27,15 @@ public interface UserService {
 
     void modifyUserBirthday(Integer userId, LocalDate birthday) throws AccessDeniedException;
 
-    void changeUserGroup(Integer userId, Integer groupId);
+    void changeUserGroup(Integer userId, Integer groupId) throws AccessDeniedException;
+
+    void leaveGroup(Integer userId) throws AccessDeniedException, UserNotFoundException;
 
     void changeUserRole(Integer userId, Role role) throws AccessDeniedException;
 
     boolean checkIfUserIsInAGroup(Integer userId);
 
-    void addCelebratedFriendToUser(Integer userId, Integer friendId) throws AccessDeniedException;
+    void addCelebratedFriendToUser(Integer userId, Integer friendId) throws Exception;
 
     void removeCelebratedFriendFromUser(Integer userId, Integer friendId) throws AccessDeniedException;
 
@@ -47,4 +52,13 @@ public interface UserService {
     Optional<User> findUserByUsername(String usrnm);
 
     List<User> findAllUsers();
+
+    List<User> findUsersByGroupId(Integer groupId);
+
+    List<Event> findAllEvents(Integer userId);
+
+    void joinGroupRequest(Integer userId, Integer groupId) throws AccessDeniedException;
+
+    void updateJoinStatus(Integer userId, JoinStatus joinStatus) throws AccessDeniedException;
+
 }

@@ -38,6 +38,8 @@ public class User implements UserDetails {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
 
     private LocalDate joinDate;
+    @Enumerated(EnumType.STRING)
+    private JoinStatus joinStatus;
     private Boolean locked;
     private Boolean enabled;
 

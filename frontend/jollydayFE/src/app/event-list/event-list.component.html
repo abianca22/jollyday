@@ -1,0 +1,26 @@
+<div class="container mt-4">
+    <h3>Evenimentele tale</h3>
+    <br>
+    <br>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Sarbatorit</th>
+          <th scope="col">Data</th>
+          <th scope="col">Responsabil</th>
+          <th scope="col">Suma</th>
+          <th scope="col">Locatie</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let event of events">
+          <td (click)="redirectToUser(event.celebratedName)">{{ event.celebratedName }}</td>
+          <td>{{ event.creationDate }}</td>
+          <td (click)="redirectToUser(event.collectorName)">{{ event.collectorName }}</td>
+          <td>{{ event.collectedAmount }}</td>
+          <td *ngIf="hasGroup(event.collectingPlaceName); else noGroup" (click)="redirectToGroup(event.collectingPlaceName)">{{ event.collectingPlaceName }}</td>
+          <ng-template #noGroup><div>Discutie in privat</div></ng-template>
+        </tr>
+      </tbody>
+    </table>
+  </div>

@@ -11,7 +11,7 @@ import { UserService } from '../user.service';
 export class ViewUserComponent implements OnInit{
 
   username: string | null = null;
-  user: User = new User();
+  user: any;
 
   constructor(private actRt: ActivatedRoute, private usrSrv: UserService) {}
 
@@ -19,6 +19,14 @@ export class ViewUserComponent implements OnInit{
     this.username = this.actRt.snapshot.params["username"];
     this.usrSrv.findUserByUsername(this.username).subscribe(data => {
       this.user = data;
+      console.log(this.user);
     });
+  }
+
+  isAccepted(user: User | null) {
+    if (user == null || user == undefined) return false;
+    if (user.group == null || user.group == undefined) return false;
+    if (user.joinStatus == "NONE" || user.joinStatus == "PENDING") return false;
+    return true;
   }
 }

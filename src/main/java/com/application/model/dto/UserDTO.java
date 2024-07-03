@@ -19,5 +19,6 @@ public class UserDTO {
     private String email;
     private LocalDate birthday;
     private Integer groupId;
+    private String joinStatus;
 
 }

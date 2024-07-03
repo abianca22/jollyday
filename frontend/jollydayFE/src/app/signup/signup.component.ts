@@ -29,7 +29,7 @@ export class SignupComponent implements OnInit{
 
   signUpUser() {
     this.user.birthday = Utils.formatDate(this.user.birthday !== null ? this.user.birthday : '');
-    this.userSevice.addUser(this.user).subscribe(data => {
+    this.authSrv.signup(this.user).subscribe(data => {
       console.log(data);
       this.firstLogIn(this.user.username || '', this.user.password || '');
     });

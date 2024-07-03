@@ -20,14 +20,17 @@
                     <td>{{user.firstName}}</td>
                     <td>{{user.lastName}}</td>
                     <td>{{user.birthday}}</td>
-                    <td>{{(user.group !== null && user.group !== undefined) ? user.group.name : null}}</td>
+                    <td *ngIf="isAccepted(user) else noGroup">{{user.group != null ? user.group.name : null}}</td>
+                    <ng-template #noGroup><td>Momentan utilizatorul nu<br>apartine niciunui grup</td></ng-template>
                     <td>
                         <!-- <button (click) = "modifyGivenUser(user.username)" class="btn btn-outline-primary" style="font-size: small; padding: 5px;">Update Details</button>
                         <button (click) = "deleteGivenUser(user.username)" class="btn btn-outline-danger" style="margin-left: 5px; font-size: small; padding: 5px;">Delete User</button> -->
                             <button (click) = "showGivenUser(user.username)" class="btn btn-outline-info" style="margin-left: 5px; font-size: small; padding: 5px;">Vezi profil</button>
-                            <div *ngIf="isAdmin">
+                            <div *ngIf="isAdmin && !isOwner(user.username)">
                                 <button (click) = "deleteGivenUser(user.username)" class="btn btn-outline-danger" style="margin-left: 5px; font-size: small; padding: 5px;">Delete User</button>
                             </div>
+                            <button class="btn btn-outline-primary" style="margin-left: 5px; font-size: small; padding: 5px;" (click)="joinFor(user.id)" *ngIf="!isOwner(user.username) && !isFriend(user.username); else alreadyFriend">Participa</button>
+                            <ng-template #alreadyFriend><button class="btn btn-outline-danger" style="margin-left: 5px; font-size: small; padding: 5px;" *ngIf="!isOwner(user.username)" (click)="stopParticipating(user.id)">Anuleaza participarea</button></ng-template>
                     </td>
                 </tr>
             </tbody>
