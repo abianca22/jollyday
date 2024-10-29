@@ -32,6 +32,7 @@ export class UpdateUserDetailsComponent {
   updateUser(): void {
     this.user.lastName = this.user.lastName.trim();
     this.user.firstName = this.user.firstName.trim();
+    console.log(this.user);
     this.usrSrv.modifyUser(this.user.username, this.user).subscribe(data => {
       this.router.navigate(["/users"]);
     })

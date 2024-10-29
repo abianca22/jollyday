@@ -1,10 +1,10 @@
 <h3 class="text-center" style="margin-top: 20px;">Utilizatori ai grupului {{groupName}}</h3>
-<div *ngIf="group != undefined && isAdmin()" class="text-center">
+<div *ngIf="group != undefined && (isAdmin() || isEditor())" class="text-center">
     <button class="btn btn-info button-hover" [routerLink]="['../../../updateGroup', group.name]">Modifica grup</button>
 </div>
 <div *ngIf="group != undefined && !isAdmin()" class="text-center">
     <button (click)="leaveGroup(group.id)" class="btn btn-danger">Paraseste grupul</button>
-    <button class="btn btn-primary" [routerLink]="['../../../updateGroupDescription', group.name]">Modifica grup</button>
+    <button *ngIf="!isEditor()" class="btn btn-primary" [routerLink]="['../../../updateGroupDescription', group.name]">Modifica grup</button>
 </div>
 <div class="row container" style="margin-top: 100px;" *ngIf="group != undefined">
     <div class="col-2"></div>
@@ -23,13 +23,13 @@
                     <td (click)="redirectToUser(usr.username)">{{usr.username}}</td>
                     <td>{{usr.firstName}}</td>
                     <td>{{usr.lastName}}</td>
-                    <td *ngIf="usr.joinStatus=='PENDING' && isAdmin() && !isOwner(usr.username); else accepted">
+                    <td *ngIf="usr.joinStatus=='PENDING' && (isAdmin() || isEditor()) && !isOwner(usr.username); else accepted">
                         <button class="btn btn-outline-success" (click)="acceptRequest(groupId, usr.id)">Accepta</button>
-                        <button *ngIf="isAdmin() && !isOwner(usr.username)" class="btn btn-outline-danger" (click)="excludeRequest(usr.id)">Respinge</button>
+                        <button *ngIf="(isAdmin() || isEditor()) && !isOwner(usr.username)" class="btn btn-outline-danger" (click)="excludeRequest(usr.id)">Respinge</button>
                     </td>
                     <ng-template #accepted>
                         <td>
-                            <button *ngIf="isAdmin() && !isOwner(usr.username)" (click)="excludeRequest(usr.id)" class="btn btn-outline-danger">Elimina</button>
+                            <button *ngIf="(isAdmin() || isEditor()) && !isOwner(usr.username)" (click)="excludeRequest(usr.id)" class="btn btn-outline-danger">Elimina</button>
                             <button *ngIf="isAdmin() && !isOwner(usr.username) && !isLeader(group.leaderId, usr.id)" (click)="changeLeader(groupId, usr.id)" class="btn btn-outline-info">Schimba in lider</button>
                             <button *ngIf="isAdmin() && !isOwner(usr.username) && isLeader(group.leaderId, usr.id)" (click)="removeLeader(groupId, usr.id)" class="btn btn-outline-info">Schimba in membru</button>
                         </td>

@@ -26,9 +26,9 @@ export class ViewUserComponent implements OnInit{
     });
   }
 
-  isAccepted(user: User | null) {
+  isAccepted(user: any) {
     if (user == null || user == undefined) return false;
-    if (user.group == null || user.group == undefined) return false;
+    if (user.groupName === '' || user.groupName === undefined || user.groupName === null) return false;
     if (user.joinStatus == "NONE" || user.joinStatus == "PENDING") return false;
     return true;
   }

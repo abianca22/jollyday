@@ -15,6 +15,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.SpringVersion;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -32,7 +33,7 @@ public class JollydayApplication {
 	private final EventRepository eventRepository;
 	private final UserService userService;
 
-	private List<String> emails = Arrays.asList("bianca.andrei.f22@gmail.com", "bianca-filofteia.andrei@s.unibuc.ro", "bianca.andrei.f22@outloook.com", "biancaandrei_2009@yahoo.com");
+	private List<String> emails = Arrays.asList("bianca.andrei.f22@gmail.com", "bianca-filofteia.andrei@s.unibuc.ro", "bianca.andrei.f22@outlook.com", "biancaandrei_2009@yahoo.com");
 
 
 	public static void main(String[] args) {
@@ -65,9 +66,14 @@ public class JollydayApplication {
 								userService.addJoinedEventToUser(id, eventId);
 							var participant = userService.findUserById(id).orElse(null);
 							if (participant != null) {
+								System.out.println("Avem participanti");
+								System.out.println(emails);
+								System.out.println(participant.getEmail());
 								if(emails.contains(participant.getEmail())) {
+									System.out.println("Avem email valid: " + participant.getEmail());
 									Event event = eventService.findById(eventId).orElse(null);
 									if(event != null) {
+										System.out.println("Avem event: " + event.getId());
 										String group = event.getCollectingPlace() == null ? "Contactati colectorul in privat" : event.getCollectingPlaceName();
 										sendEmailService.sendMail(participant.getEmail(), "Jollyday - o noua zi de nastere", "Collector: " + event.getCollectorUser().getUsername() + "\nLocatie strangere fonduri: " + group + "\nSarbatorit: " + event.getCelebratedUser().getUsername() + "\nSuma: " + event.getCollectedAmount() + "\nData: " + event.getCreationDate().toString());
 									}

@@ -164,10 +164,10 @@ public class UserRepositoryImpl implements CustomUserRepository {
             if (obj[4].equals("ACCEPTED")) joinStatus = JoinStatus.ACCEPTED;
             if (obj[4].equals("NONE")) joinStatus = JoinStatus.NONE;
             User user = User.builder()
-                    .username(obj[0].toString())
-                    .lastName(obj[1].toString())
-                    .firstName(obj[2].toString())
-                    .id((Integer) obj[3])
+                    .username(obj[0] == null ? null : obj[0].toString())
+                    .lastName(obj[1] == null ? null : obj[1].toString())
+                    .firstName(obj[2] == null ? null : obj[2].toString())
+                    .id(obj[3] == null ? null : (Integer) obj[3])
                     .joinStatus(joinStatus)
                     .build();
             users.add(user);

@@ -69,13 +69,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changeUserGroup(Integer userId, Integer groupId) throws AccessDeniedException {
-        if (!this.currentUserIsAdministrator()) throw new AccessDeniedException();
+        if (!this.currentUserIsAdministrator() && !this.currentUserIsEditor()) throw new AccessDeniedException();
         repo.updateGroup(userId, groupId);
     }
 
     @Override
     public void leaveGroup(Integer userId) throws AccessDeniedException, UserNotFoundException {
-        if (!this.currentUserIsAdministrator() && !this.getAuthenticatedUserId().equals(userId)) throw new AccessDeniedException();;
+        if (!this.currentUserIsAdministrator() && !this.currentUserIsEditor() && !this.getAuthenticatedUserId().equals(userId)) throw new AccessDeniedException();;
         System.out.println("A trecut de permisiuni");
         var usr = this.findUserById(userId).orElseThrow(UserNotFoundException::new);
         if (usr.getUserRole() == Role.EDITOR)
@@ -192,7 +192,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateJoinStatus(Integer userId, JoinStatus joinStatus) throws AccessDeniedException {
-        if (!this.currentUserIsAdministrator()) {
+        if (!this.currentUserIsAdministrator() && !this.currentUserIsEditor()) {
             throw new AccessDeniedException();
         }
         repo.updateJoinStatus(userId, joinStatus);

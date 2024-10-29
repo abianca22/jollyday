@@ -20,7 +20,11 @@ export class GroupUsersListComponent {
     this.groupId = window.history.state.groupId;
     this.groupName = this.actRt.snapshot.params["name"];
     grpSrv.getGroup(this.groupName).subscribe(data => this.group = data);
-    grpSrv.getUsersFromGivenGroup(this.groupId).subscribe(data => {this.users = data; console.log(data)});
+    if (this.loginSrv.getRole() == 'ADMIN' || this.loginSrv.getRole() == 'EDITOR')
+      grpSrv.getUsersFromGivenGroup(this.groupId).subscribe(data => {this.users = data; console.log(data)});
+    else {
+      grpSrv.getUsersFromGivenGroup(this.groupId).subscribe(data => {this.users = data.filter(user => user.joinStatus === 'ACCEPTED')});
+    }
   }
 
   redirectToUser(username: string) {
@@ -30,6 +34,11 @@ export class GroupUsersListComponent {
   isAdmin(): boolean {
     return this.loginSrv.getRole() === 'ADMIN';
   }
+
+  isEditor(): boolean {
+    return this.loginSrv.getRole() === 'EDITOR';
+  }
+
 
   acceptRequest(groupId: number, userId: number) {
     this.usrSrv.acceptJoinRequest(userId, groupId).subscribe(() => {

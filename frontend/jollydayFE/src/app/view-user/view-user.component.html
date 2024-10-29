@@ -1,5 +1,7 @@
-<h5>User details</h5>
-<div *ngIf="user !== undefined">
+<div class="d-flex justify-content-center">
+<div *ngIf="user !== undefined && user !== null">
+    <br><br>
+    <h5>Detalii utilizator</h5><br>
     <div>
         <label><b>Username: </b></label> {{user.username}}
     </div>
@@ -16,12 +18,15 @@
         <label><b>Birthday: </b></label> {{user.birthday}}
     </div>
     <div>
-        <label><b>Group: </b></label> 
-        <span *ngIf="isAccepted(user); else noGroup">{{user.groupName}}</span>
-        <ng-template #noGroup><span>Momentan utilizatorul nu apartine niciunui grup</span></ng-template>
+        <label><b>Group:</b> </label> 
+        <span *ngIf="isAccepted(user); else noGroup"> {{user.groupName}}</span>
+        <ng-template #noGroup><span> Momentan utilizatorul nu apartine niciunui grup</span></ng-template>
     </div>
+    <br>
+    <br>
     <div class="text-center" *ngIf="isOwner()">
         <button class="btn btn-primary" routerLink="/modifyDetails">Modifica detalii</button>
         <button class="btn btn-danger" (click)="deleteAccount()">Sterge cont</button>
     </div>
+</div>
 </div>
